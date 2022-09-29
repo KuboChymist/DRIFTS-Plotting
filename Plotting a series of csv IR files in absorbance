@@ -1,0 +1,49 @@
+import pandas as pd
+import os
+
+# Set your path to the folder containing the .csv files
+PATH = './'
+fileNames = os.listdir(PATH)
+fileNames = [file for file in fileNames if '.csv' in file]
+
+IR_list = []
+
+for i in range(len(fileNames)):
+    IR_df = pd.read_csv("C://"+fileNames[i], names=["Wavenumbers", "Absorbance"])  #add path name here
+    IR_df["Absorbance"] = IR_df["Absorbance"] - IR_df["Absorbance"][0]             #shifting the baseline to zero
+    IR_list.append(IR_df)
+    
+import matplotlib.pyplot as plt
+from matplotlib import colors
+
+
+cdict = {'red':   ((0.0,  0.22, 0.0),
+                   (0.5,  1.0, 1.0),
+                   (1.0,  0.89, 1.0)),
+
+         'green': ((0.0,  0.49, 0.0),
+                   (0.5,  1.0, 1.0),
+                   (1.0,  0.12, 1.0)),
+
+         'blue':  ((0.0,  0.72, 0.0),
+                   (0.5,  0.0, 0.0),
+                   (1.0,  0.11, 1.0))}
+
+cmap = colors.LinearSegmentedColormap('custom', cdict)
+
+
+fig, axs = plt.subplots(1, 1)
+i=20
+for IR_df in IR_list:
+    axs.plot(IR_df["Wavenumbers"], IR_df["Absorbance"], c=cmap(i), alpha=0.75)
+    i+=15
+
+axs.set_xlim(4000, 1000)
+axs.set_ylim(None, 2)
+
+axs.set_xlabel('wavenumber [$\mathregular{cm^{-1}]}$')
+axs.set_ylabel('absorbance')
+axs.grid(True)
+axs.set_title('Title') 
+fig.tight_layout()
+plt.savefig('Title.png',dpi=300)
